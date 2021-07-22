@@ -13,10 +13,15 @@ public class PlayerController : BaseWorldObject
 	public Transform waist = null;
 	bool isOnAutoAim = true;
 
+	Collider[] detectedObjs;
+	LayerMask scanLayer = 1 << 8;
+
+	Vector3 aimPos;
+
 	public override void Init()
     {
 		WorldObjectType = Define.WorldObject.Player;
-
+		aimPos = GameObject.Find("Crosshair").transform.position;
 		_stat = gameObject.GetComponent<PlayerStat>();
 		//Managers.Input.MouseAction -= OnMouseEvent;
 		//Managers.Input.MouseAction += OnMouseEvent;
@@ -35,28 +40,19 @@ public class PlayerController : BaseWorldObject
 
     private void Update()
     {
-		if (isOnAutoAim)
-		{
-
-		}
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+			OnHitEvent();
+        }
 	}
     void OnHitEvent()
 	{
-        //Ray ray = new Ray()
-        //if (_lockTarget != null)
-        //{
-        //    Stat targetStat = _lockTarget.GetComponent<Stat>();
-        //    targetStat.OnAttacked(_stat);
-        //}
-
-        //if (_stopSkill)
-        //{
-        //    State = Define.State.Idle;
-        //}
-        //else
-        //{
-        //    State = Define.State.Skill;
-        //}
+		Ray ray = Camera.main.ScreenPointToRay(aimPos);
+		RaycastHit hit;
+		if(Physics.Raycast(ray,out hit,scanLayer))
+        {
+			hit.transform.GetComponent<Stat>().OnAttacked(_stat);
+        }
     }
 
 

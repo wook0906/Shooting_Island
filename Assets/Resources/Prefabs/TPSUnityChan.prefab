@@ -7122,6 +7122,7 @@ MonoBehaviour:
   _attack: 0
   _defense: 0
   _moveSpeed: 0
+  _aimScanRange: 10
   _exp: 0
   _gold: 0
 --- !u!1 &5775152219645197924

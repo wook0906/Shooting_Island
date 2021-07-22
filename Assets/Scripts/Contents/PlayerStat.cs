@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerStat : Stat
 {
-    [SerializeField]
+	[SerializeField]
+	protected float _aimScanRange = 10;
+	[SerializeField]
 	protected int _exp;
     [SerializeField]
 	protected int _gold;
@@ -37,6 +39,7 @@ public class PlayerStat : Stat
 	}
 
 	public int Gold { get { return _gold; } set { _gold = value; } }
+	public float AimScanRange { get { return _aimScanRange; } set { _aimScanRange = value; } }
 
 	private void Start()
 	{

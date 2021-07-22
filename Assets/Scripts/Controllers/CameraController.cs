@@ -72,18 +72,5 @@ public class CameraController : MonoBehaviour
     //}
     #endregion
 
-    float detectDistanceFromAim;
-    Vector2 aimPos;
-
-    private void Start()
-    {
-        Vector3 targetScreenPos = Camera.main.WorldToViewportPoint(GameObject.Find("Tent").transform.position);
-        Vector3 aimPos = Camera.main.ScreenToViewportPoint(GameObject.Find("Crosshair").transform.position);
-        Debug.Log(aimPos);
-        Debug.Log(targetScreenPos);
-    }
-    private void Update()
-    {
-        
-    }
+    
 }

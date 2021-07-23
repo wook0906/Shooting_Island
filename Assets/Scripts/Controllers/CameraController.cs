@@ -4,73 +4,50 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    #region prev
-    //[SerializeField]
-    //Define.CameraMode _mode = Define.CameraMode.QuarterView;
-    //[SerializeField]
-    //Vector3 _delta = new Vector3(0.0f, 6.0f, -5.0f);
+    [SerializeField]
+    Define.CameraMode _mode = Define.CameraMode.QuarterView;
+    [SerializeField]
+    Vector3 _delta = new Vector3(0.0f, 6.0f, -5.0f);
 
-    //[SerializeField]
-    //GameObject _player = null;
+    [SerializeField]
+    GameObject _player = null;
 
-    //public void SetPlayer(GameObject player) { _player = player; }
+    public void SetPlayer(GameObject player) { _player = player; }
+    Transform rotator;
 
-    //void Start()
-    //{
-    //    switch (_mode)
-    //    {
-    //        case Define.CameraMode.QuarterView:
-    //            break;
-    //        case Define.CameraMode.TPS:
-    //            transform.SetParent(_player.transform);
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
+    void Start()
+    {
+        SetPlayer(transform.root.gameObject);
+        rotator = transform.parent;
 
-    //void LateUpdate()
-    //{
-    //    switch (_mode)
-    //    {
-    //        case Define.CameraMode.QuarterView:
-    //            if (_player.IsValid() == false)
-    //            {
-    //                return;
-    //            }
+        Managers.Input.aimJoystickAction -= OnAimJoystick;
+        Managers.Input.aimJoystickAction += OnAimJoystick;
 
-    //            RaycastHit hit;
-    //            if (Physics.Raycast(_player.transform.position, _delta, out hit, _delta.magnitude, 1 << (int)Define.Layer.Block))
-    //            {
-    //                float dist = (hit.point - _player.transform.position).magnitude * 0.8f;
-    //                transform.position = _player.transform.position + _delta.normalized * dist;
-    //            }
-    //            else
-    //            {
-    //                transform.position = _player.transform.position + _delta;
-    //                transform.LookAt(_player.transform);
-    //            }
-    //            break;
-    //        case Define.CameraMode.TPS:
-    //            if (_player.IsValid() == false)
-    //            {
-    //                return;
-    //            }
-    //            transform.localPosition = _delta;
-    //            //transform.LookAt(Camera.main.ScreenToWorldPoint(Vector3.zero));
+  
+    }
+    void OnAimJoystick(Vector2 axis)
+    {
+        rotator.transform.Rotate(new Vector3(0, axis.x, 0f));
 
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
+        Vector3 rot = rotator.localRotation.eulerAngles;
+        rot.x += axis.y;
 
-    //public void SetQuarterView(Vector3 delta)
-    //{
-    //    _mode = Define.CameraMode.QuarterView;
-    //    _delta = delta;
-    //}
-    #endregion
+        if (rot.x < 35f)
+            rotator.Rotate(new Vector3(0f, 0f, rot.y));
+        if (rot.x > -30f + 360f)
+            rotator.Rotate(new Vector3(0f, 0f, rot.y));
+    }
+    void LateUpdate()
+    {
+        if (_player.IsValid() == false)
+        {
+            return;
+        }
+        //rotator.transform.localPosition = _delta;
+        //transform.LookAt(Camera.main.ScreenToWorldPoint(Vector3.zero));
+    }
 
-    
+
+
+
 }

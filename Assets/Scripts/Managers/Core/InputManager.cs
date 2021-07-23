@@ -21,7 +21,8 @@ public class InputManager
     {
         if(moveJoystick != null && moveJoystickAction != null)
         {
-            moveJoystickAction.Invoke(new Vector2(moveJoystick.Horizontal, moveJoystick.Vertical));
+            //moveJoystickAction.Invoke(new Vector2(moveJoystick.Horizontal, moveJoystick.Vertical));
+            moveJoystickAction.Invoke(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
         }
         if (aimJoystick != null && aimJoystickAction != null)
         {

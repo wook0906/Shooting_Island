@@ -8,34 +8,34 @@ public class PlayerController : BaseWorldObject
 	int _mask = (1 << (int)Define.Layer.Ground) | (1 << (int)Define.Layer.Monster);
 
 	PlayerStat _stat;
+	public PlayerStat Stat
+    {
+        get { return _stat; }
+    }
 	bool _stopSkill = false;
-
-	public Transform waist = null;
-	bool isOnAutoAim = true;
 
 	Collider[] detectedObjs;
 	LayerMask scanLayer = 1 << 8;
 
-	Vector3 aimPos;
+	public Transform cam;
+
+	StateMachine fsm;
+	float moveXAxis;
+	float moveZAxis;
 
 	public override void Init()
     {
 		WorldObjectType = Define.WorldObject.Player;
-		aimPos = GameObject.Find("Crosshair").transform.position;
 		_stat = gameObject.GetComponent<PlayerStat>();
-		//Managers.Input.MouseAction -= OnMouseEvent;
-		//Managers.Input.MouseAction += OnMouseEvent;
-		//Managers.Input.KeyAction -= OnKeyBoard;
-		//Managers.Input.KeyAction += OnKeyBoard;
+		
 		Managers.Input.moveJoystickAction -= OnMoveJoystick;
 		Managers.Input.moveJoystickAction += OnMoveJoystick;
-		Managers.Input.aimJoystickAction -= OnAimJoystick;
-		Managers.Input.aimJoystickAction += OnAimJoystick;
+		
 
 		if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
 			Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
-		
 
+		fsm = GetComponent<StateMachine>();
 	}
 
     private void Update()
@@ -44,40 +44,40 @@ public class PlayerController : BaseWorldObject
         {
 			OnHitEvent();
         }
+		LookAtCameraDirection();
 	}
     void OnHitEvent()
 	{
-		Ray ray = Camera.main.ScreenPointToRay(aimPos);
-		RaycastHit hit;
-		if(Physics.Raycast(ray,out hit,scanLayer))
-        {
-			hit.transform.GetComponent<Stat>().OnAttacked(_stat);
-        }
+		//Ray ray = Camera.main.ScreenPointToRay(aimPos);
+		//RaycastHit hit;
+		//if(Physics.Raycast(ray,out hit,scanLayer))
+  //      {
+		//	hit.transform.GetComponent<Stat>().OnAttacked(_stat);
+  //      }
     }
 
-
+	void LookAtCameraDirection()
+    {
+		Quaternion newRot = Quaternion.LookRotation(cam.forward, Vector3.up);
+		newRot.x = 0f;
+		newRot.z = 0f;
+		transform.rotation = newRot;
+    }
 	void OnMoveJoystick(Vector2 axis)
 	{
-		transform.Translate(new Vector3(axis.x, 0, axis.y) * Time.deltaTime * _stat.MoveSpeed);
-	}
-	void OnAimJoystick(Vector2 axis)
-	{
-		
-		transform.Rotate(new Vector3(0, axis.x, 0f));
+		moveXAxis = axis.x;
+		moveZAxis = axis.y;
 
-		Vector3 rot = waist.localRotation.eulerAngles;
-		rot.z += axis.y;
-
-		if (rot.z < 35f)
-			waist.Rotate(new Vector3(0f, 0f, axis.y));
-		if (rot.z > -30f + 360f)
-			waist.Rotate(new Vector3(0f, 0f, axis.y));
+		if(axis == Vector2.zero)
+			fsm.isMoving = false;
+        else
+			fsm.isMoving = true;
 	}
-	Vector2 GetAutoAimValue()
+	public Vector2 GetCurrentMoveJoyStickAxis()
     {
-
-		return Vector2.zero;
+		return new Vector2(moveXAxis, moveZAxis);
     }
+	
 
 
 

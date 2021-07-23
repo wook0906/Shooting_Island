@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class Define
 {
+    public enum WeaponType
+    {
+        None,
+        Shotgun,
+        Sniper,
+        Bow,
+        Bomb,
+        Sword,
+    }
+    public enum EquipmentType
+    {
+        Weapon,
+        Armor,
+        Shield,
+    }
     public enum joysticRole
     {
         move,

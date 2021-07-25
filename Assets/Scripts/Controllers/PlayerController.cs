@@ -48,12 +48,7 @@ public class PlayerController : BaseWorldObject
 	}
     void OnHitEvent()
 	{
-		//Ray ray = Camera.main.ScreenPointToRay(aimPos);
-		//RaycastHit hit;
-		//if(Physics.Raycast(ray,out hit,scanLayer))
-  //      {
-		//	hit.transform.GetComponent<Stat>().OnAttacked(_stat);
-  //      }
+		Debug.Log("OnHitEvent!");
     }
 
 	void LookAtCameraDirection()

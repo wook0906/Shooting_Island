@@ -11,7 +11,7 @@ public class StateMachine : MonoBehaviour
     private Animator _animator;
     public Animator Animator { get { return _animator; } }
 
-    [HideInInspector] public bool isDamaged = false;
+     public bool isTargetLockOn = false;
     [HideInInspector] public bool isMoving = false;
 
 
@@ -28,7 +28,6 @@ public class StateMachine : MonoBehaviour
         foreach (var item in StateEntry)
         {
             stateDic.Add(item.name, item);
-            Debug.Log(item.name);
         }
         //Managers.Resource.LoadAsync<StateBase>("Assets/_ScriptableObjects/States/SpawnState.asset",
         //    (result) =>
@@ -42,7 +41,6 @@ public class StateMachine : MonoBehaviour
 
     private void Start()
     {
-        
         remainState = currentState;
     }
 
@@ -50,6 +48,7 @@ public class StateMachine : MonoBehaviour
     {
         if (newState == null)
         {
+            Debug.Log("새로운 스테이트가 없단다!");
             if (remainState != currentState)
             {
                 ChangeState(remainState);

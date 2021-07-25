@@ -23,6 +23,7 @@ public abstract class StateBase : ScriptableObject
     {
         for (int i = 0; i < transitions.Count; i++)
         {
+            Debug.Log(transitions[i].decision.name + " 검사");
             bool decision = transitions[i].decision.Decision(fsm);
             if (decision)
             {
@@ -30,6 +31,7 @@ public abstract class StateBase : ScriptableObject
                     continue;
 
                 fsm.ChangeState(transitions[i].trueState);
+                Debug.Log("true! : " + transitions[i].trueState.name + " 으로 전이"); 
                 break;
             }
             else
@@ -38,6 +40,7 @@ public abstract class StateBase : ScriptableObject
                     continue;
 
                 fsm.ChangeState(transitions[i].falseState);
+                Debug.Log("false! : " + transitions[i].falseState.name + " 으로 전이");
                 break;
             }
         }

@@ -20,7 +20,7 @@ public class StateMachine : MonoBehaviour
     public StateBase remainState;
 
     private Dictionary<string, StateBase> stateDic = new Dictionary<string, StateBase>();
-
+    
     private void Awake()
     {
         _owner = GetComponent<PlayerController>();

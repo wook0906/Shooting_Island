@@ -5,9 +5,10 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "StateMachine/States/MoveState")]
 public class MoveState : StateBase
 {
+    Vector2 axis;
     public override void OnEnterState(StateMachine fsm)
     {
-        fsm.Animator.CrossFade("Move", .1f);
+        
     }
 
     public override void OnExitState(StateMachine fsm)
@@ -16,7 +17,15 @@ public class MoveState : StateBase
     }
     public override void Action(StateMachine fsm, float deltaTime)
     {
-        Vector2 axis = fsm.Owner.GetCurrentMoveJoyStickAxis();
-        fsm.transform.Translate(new Vector3(axis.x,0,axis.y) * Time.deltaTime * fsm.Owner.Stat.MoveSpeed);
+        axis = fsm.Owner.GetCurrentMoveJoyStickAxis();
+        if (axis.y >= 0f)
+            fsm.transform.Translate(new Vector3(axis.x, 0, axis.y) * deltaTime * fsm.Owner.Stat.MoveSpeed);
+        else
+            fsm.transform.Translate(new Vector3(axis.x,0, axis.y) * deltaTime * fsm.Owner.Stat.MoveSpeed / 2f);
+        fsm.Animator.SetFloat("xAxis", axis.x);
+        fsm.Animator.SetFloat("zAxis", axis.y);
+
+
     }
+    
 }

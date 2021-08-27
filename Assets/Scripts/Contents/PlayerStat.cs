@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerStat : Stat
 {
+
 	[SerializeField]
 	protected float _aimScanRange = 10;
 	[SerializeField]
@@ -65,4 +66,9 @@ public class PlayerStat : Stat
 	{
 		//Debug.Log("Player Dead");
 	}
+
+	public PlayerController GetController()
+    {
+		return GetComponent<PlayerController>();
+    }
 }

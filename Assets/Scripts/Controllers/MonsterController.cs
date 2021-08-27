@@ -3,160 +3,125 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MonsterController : BaseWorldObject
+public class MonsterController : WorldObjectBase
 {
-	Stat _stat;
+	MonsterStat _stat;
+	public MonsterStat Stat
+	{
+		get { return _stat; }
+		set { _stat = value; }
+	}
 
 	[SerializeField]
 	Vector3 _destPos;
 
 	[SerializeField]
-	Define.State _state = Define.State.Idle;
-
-	[SerializeField]
 	GameObject _lockTarget;
-
-	[SerializeField]
-	float _scanRange = 10;
-
-	[SerializeField]
-	float _attackRange = 2;
-
-	public virtual Define.State State
-	{
-		get { return _state; }
-		set
-		{
-			_state = value;
-
-			Animator anim = GetComponent<Animator>();
-			switch (_state)
-			{
-				case Define.State.Die:
-					break;
-				case Define.State.Idle:
-					anim.CrossFade("WAIT", 0.1f);
-					break;
-				case Define.State.Moving:
-					anim.CrossFade("RUN", 0.1f);
-					break;
-				case Define.State.Skill:
-					anim.CrossFade("ATTACK", 0.1f, -1, 0);
-					break;
-			}
-		}
+	public GameObject LockTarget 
+	{ 
+		get { return _lockTarget; }
+        set { _lockTarget = value; }
 	}
 
+
+	[HideInInspector]
+	public NavMeshAgent nma;
+
+	public bool IsArrivedToTarget()
+    {
+		_destPos = _lockTarget.transform.position;
+		float distance = (_destPos - transform.position).magnitude;
+		if (distance <= Stat.attackRange)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
 	public override void Init()
     {
 		WorldObjectType = Define.WorldObject.Monster;
-		_stat = gameObject.GetOrAddComponent<Stat>();
+		Stat = gameObject.GetOrAddComponent<MonsterStat>();
+
+		nma = gameObject.GetOrAddComponent<NavMeshAgent>();
 
 		if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
 			Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
+
+		fsm = GetComponent<StateMachine>();
+		fsm.Init();
 	}
 
-	void Update()
-	{
-		switch (State)
-		{
-			case Define.State.Die:
-				//UpdateDie();
-				break;
-			case Define.State.Moving:
-				UpdateMoving();
-				break;
-			case Define.State.Idle:
-				UpdateIdle();
-				break;
-			case Define.State.Skill:
-				UpdateSkill();
-				break;
-		}
-	}
+	//void UpdateIdle()
+	//{
+	//	GameObject player = Managers.Game.GetPlayer();
+	//	if (player == null)
+	//		return;
 
+	//	float distance = (player.transform.position - transform.position).magnitude;
+	//	if (distance <= _scanRange)
+	//	{
+	//		_lockTarget = player;
+	//		State = Define.State.Moving;
+	//		return;
+	//	}
+	//}
 
-	void UpdateIdle()
-	{
-		GameObject player = Managers.Game.GetPlayer();
-		if (player == null)
-			return;
+	//void UpdateMoving()
+	//{
+	//	// 플레이어가 내 사정거리보다 가까우면 공격
+	//	if (_lockTarget != null)
+	//	{
+	//		_destPos = _lockTarget.transform.position;
+	//		float distance = (_destPos - transform.position).magnitude;
+	//		if (distance <= _attackRange)
+	//		{
+	//			NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();
+	//			nma.SetDestination(transform.position);
+	//			State = Define.State.Skill;
+	//			return;
+	//		}
+	//	}
 
-		float distance = (player.transform.position - transform.position).magnitude;
-		if (distance <= _scanRange)
-		{
-			_lockTarget = player;
-			State = Define.State.Moving;
-			return;
-		}
-	}
+	//	// 이동
+	//	Vector3 dir = _destPos - transform.position;
+	//	if (dir.magnitude < 0.1f)
+	//	{
+	//		State = Define.State.Idle;
+	//	}
+	//	else
+	//	{
+	//		NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();
+	//		nma.SetDestination(_destPos);
+			
+	//	}
+	//}
 
-	void UpdateMoving()
-	{
-		// 플레이어가 내 사정거리보다 가까우면 공격
-		if (_lockTarget != null)
-		{
-			_destPos = _lockTarget.transform.position;
-			float distance = (_destPos - transform.position).magnitude;
-			if (distance <= _attackRange)
-			{
-				NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();
-				nma.SetDestination(transform.position);
-				State = Define.State.Skill;
-				return;
-			}
-		}
-
-		// 이동
-		Vector3 dir = _destPos - transform.position;
-		if (dir.magnitude < 0.1f)
-		{
-			State = Define.State.Idle;
-		}
-		else
-		{
-			NavMeshAgent nma = gameObject.GetOrAddComponent<NavMeshAgent>();
-			nma.SetDestination(_destPos);
-			nma.speed = _stat.MoveSpeed;
-
-			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
-		}
-	}
-
-	void UpdateSkill()
-	{
-		if (_lockTarget != null)
-		{
-			Vector3 dir = _lockTarget.transform.position - transform.position;
-			Quaternion quat = Quaternion.LookRotation(dir);
-			transform.rotation = Quaternion.Lerp(transform.rotation, quat, 20 * Time.deltaTime);
-		}
-	}
+	//void UpdateSkill()
+	//{
+	//	if (_lockTarget != null)
+	//	{
+	//		Vector3 dir = _lockTarget.transform.position - transform.position;
+	//		Quaternion quat = Quaternion.LookRotation(dir);
+	//		transform.rotation = Quaternion.Lerp(transform.rotation, quat, 20 * Time.deltaTime);
+	//	}
+	//}
 
 	void OnHitEvent() //Animation EVent Call
 	{
-        if (_lockTarget != null)
+		float distance = (_lockTarget.transform.position - transform.position).magnitude;
+		if (distance <= Stat.attackRange)
         {
-            // 체력
-            Stat targetStat = _lockTarget.GetComponent<Stat>();
-            targetStat.OnAttacked(_stat);
-
-            if (targetStat.Hp > 0)
-            {
-                float distance = (_lockTarget.transform.position - transform.position).magnitude;
-                if (distance <= _attackRange)
-                    State = Define.State.Skill;
-                else
-                    State = Define.State.Moving;
-            }
-            else
-            {
-                State = Define.State.Idle;
-            }
-        }
-        else
-        {
-            State = Define.State.Idle;
-        }
+			Stat targetStat = _lockTarget.GetComponent<Stat>();
+			targetStat.OnAttacked(Stat);
+		}
     }
+	public void SetDestination(Vector3 pos)
+    {
+		nma.SetDestination(pos);
+    }
+	public void ResetPath()
+	{
+		nma.ResetPath();
+	}
 }

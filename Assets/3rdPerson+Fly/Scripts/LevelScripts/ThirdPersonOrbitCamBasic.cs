@@ -30,14 +30,13 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 	public float GetH { get { return angleH; } }
 
 	public GameObject crosshair;
-	public StateMachine FSM;
+	public Vector3 lockOnTargetPos;
 
 	void Awake()
 	{
 		
 		// Reference to the camera transform.
 		cam = transform;
-		FSM = player.GetComponent<StateMachine>();
 		// Set camera default position.
 		cam.position = player.transform.position + Quaternion.identity * pivotOffset + Quaternion.identity * camOffset;
 		cam.rotation = Quaternion.identity;
@@ -226,14 +225,15 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     {
 		Ray ray = Camera.main.ScreenPointToRay(crosshair.transform.position);
 		Debug.DrawRay(ray.origin, ray.direction * player.Stat.AimScanRange, Color.red, 1f);
-		if (Physics.Raycast(ray, player.Stat.AimScanRange, 1 << 6))
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit, player.Stat.AimScanRange, 1 << 6))
 		{
-			Debug.Log("있네");
-			FSM.isTargetLockOn = true;
+			lockOnTargetPos = hit.point;
+			player.isTargetLockOn = true;
 		}
 		else
 		{
-			FSM.isTargetLockOn = false;
+			player.isTargetLockOn = false;
 		}
     }
 }

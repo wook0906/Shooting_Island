@@ -14,8 +14,8 @@ public class InputManager
 
     public VariableJoystick moveJoystick;
     public VariableJoystick aimJoystick;
-    bool _pressed = false;
-    float _pressedTime = 0;
+    //bool _pressed = false;
+    //float _pressedTime = 0;
 
     public void OnUpdate()
     {

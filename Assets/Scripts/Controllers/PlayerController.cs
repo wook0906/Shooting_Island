@@ -3,55 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PlayerController : BaseWorldObject
+public class PlayerController : WorldObjectBase
 {
-	int _mask = (1 << (int)Define.Layer.Ground) | (1 << (int)Define.Layer.Monster);
-
-	PlayerStat _stat;
-	public PlayerStat Stat
-    {
-        get { return _stat; }
-    }
-	bool _stopSkill = false;
+	int _mask = (1 << (int)Define.Layer.Monster) | 1 << 0;
 
 	Collider[] detectedObjs;
-	LayerMask scanLayer = 1 << 8;
 
 	public Transform cam;
+	PlayerStat _stat;
+	public PlayerStat Stat
+	{
+		get { return _stat; }
+		set { _stat = value; }
+	}
+	public Weapon weapon;
 
-	StateMachine fsm;
+	Vector3 dirToLockOnPos;
+	
 	float moveXAxis;
 	float moveZAxis;
+	public bool isTargetLockOn = false;
+	[HideInInspector] public bool isMoving = false;
 
 	public override void Init()
     {
 		WorldObjectType = Define.WorldObject.Player;
-		_stat = gameObject.GetComponent<PlayerStat>();
-		
+		Stat = gameObject.GetOrAddComponent<PlayerStat>();
+
 		Managers.Input.moveJoystickAction -= OnMoveJoystick;
 		Managers.Input.moveJoystickAction += OnMoveJoystick;
 		
-
 		if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
 			Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
 
 		fsm = GetComponent<StateMachine>();
+		fsm.Init();
 	}
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-			OnHitEvent();
-        }
 		LookAtCameraDirection();
+		Time.timeScale = Mathf.Lerp(Time.timeScale, Input.GetKey(KeyCode.LeftShift) ? 0.02f : 1, Time.unscaledDeltaTime * 30);
+
 	}
-    void OnHitEvent()
+	void OnAttackEvent()
 	{
-		Debug.Log("OnHitEvent!");
+		weapon.Shoot(_mask, cam.GetComponent<ThirdPersonOrbitCamBasic>().lockOnTargetPos);
     }
 
-	void LookAtCameraDirection()
+    void LookAtCameraDirection()
     {
 		Quaternion newRot = Quaternion.LookRotation(cam.forward, Vector3.up);
 		newRot.x = 0f;
@@ -64,16 +64,14 @@ public class PlayerController : BaseWorldObject
 		moveZAxis = axis.y;
 
 		if(axis == Vector2.zero)
-			fsm.isMoving = false;
+			isMoving = false;
         else
-			fsm.isMoving = true;
+			isMoving = true;
 	}
 	public Vector2 GetCurrentMoveJoyStickAxis()
     {
 		return new Vector2(moveXAxis, moveZAxis);
     }
-	
 
-
-
+    
 }

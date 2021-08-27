@@ -34,7 +34,7 @@ public class GameManagerEx
 
     public Define.WorldObject GetWorldObjectType(GameObject go)
     {
-        BaseWorldObject bc = go.GetComponent<BaseWorldObject>();
+        WorldObjectBase bc = go.GetComponent<WorldObjectBase>();
         if (bc == null)
             return Define.WorldObject.Unknown;
 

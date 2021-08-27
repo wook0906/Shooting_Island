@@ -6,14 +6,16 @@ public class StateMachine : MonoBehaviour
 {
     public List<StateBase> StateEntry;
 
-    private PlayerController _owner;
-    public PlayerController Owner { get { return _owner; } }
+    private WorldObjectBase _owner;
+    public WorldObjectBase Owner 
+    { 
+        get 
+        { 
+            return _owner;
+        } 
+    }
     private Animator _animator;
     public Animator Animator { get { return _animator; } }
-
-     public bool isTargetLockOn = false;
-    [HideInInspector] public bool isMoving = false;
-
 
     public StateBase currentState;
     public StateBase prevState;
@@ -21,9 +23,9 @@ public class StateMachine : MonoBehaviour
 
     private Dictionary<string, StateBase> stateDic = new Dictionary<string, StateBase>();
     
-    private void Awake()
+    public void Init()
     {
-        _owner = GetComponent<PlayerController>();
+        _owner = GetComponent<WorldObjectBase>();
         _animator = GetComponent<Animator>();
         foreach (var item in StateEntry)
         {
@@ -37,10 +39,7 @@ public class StateMachine : MonoBehaviour
         //    });
         currentState = stateDic["IdleState"];
         currentState.OnEnterState(this);
-    }
 
-    private void Start()
-    {
         remainState = currentState;
     }
 
@@ -48,7 +47,6 @@ public class StateMachine : MonoBehaviour
     {
         if (newState == null)
         {
-            Debug.Log("새로운 스테이트가 없단다!");
             if (remainState != currentState)
             {
                 ChangeState(remainState);

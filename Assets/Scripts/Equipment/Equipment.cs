@@ -12,4 +12,8 @@ public class Equipment : MonoBehaviour
     {
 
     }
+    protected PlayerController GetOwner()
+    {
+        return transform.root.GetComponent<PlayerController>();
+    }
 }

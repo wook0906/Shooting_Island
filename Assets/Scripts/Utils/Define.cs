@@ -41,9 +41,7 @@ public class Define
 
     public enum Layer
     {
-        Monster = 8,
-        Ground = 9,
-        Block = 10,
+        Monster = 6,
     }
 
     public enum Scene

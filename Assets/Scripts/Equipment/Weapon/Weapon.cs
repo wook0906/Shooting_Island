@@ -5,26 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class WeaponDefinition
 {
-    public Define.WeaponType type = Define.WeaponType.None;
-    public GameObject projectilePrefab;
-    public int minDamage;
-    public int maxDamage;
-    public float delayBetweenAttack;
-    public float projectileSpeed;
+    public Transform launchPos;
 }
 
-public class Weapon : Equipment
-{
-    public WeaponDefinition weaponDef;  
-    
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+public abstract class Weapon : Equipment
+{
+    public WeaponDefinition weaponInfo;
+    public abstract void Shoot(LayerMask targetLayerMask, Vector3 to);
 }

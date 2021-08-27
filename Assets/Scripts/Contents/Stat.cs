@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stat : MonoBehaviour
+
+public abstract class Stat : MonoBehaviour
 {
     [SerializeField]
     protected int _level;
@@ -26,12 +27,7 @@ public class Stat : MonoBehaviour
 
     private void Start()
     {
-        _level = 1;
-        _hp = 100;
-        _maxHp = 100;
-        _attack = 10;
-        _defense = 5;
-        _moveSpeed = 5.0f;
+
     }
 
     public virtual void OnAttacked(Stat attacker)
